@@ -1,0 +1,282 @@
+[index.html](https://github.com/user-attachments/files/33932537/index.html)
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gfony Casino — Рулетка и Кейсы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="bg-[#0b0e14] text-gray-100 min-h-screen flex flex-col select-none pb-24 max-w-md mx-auto border-x border-gray-800/80">
+    
+    <!-- Верхняя шапка -->
+    <header class="px-4 py-3 bg-[#121622] border-b border-gray-800 flex items-center justify-between sticky top-0 z-30 shadow-md">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg text-gray-950 font-black text-xl">🎰</div>
+            <div>
+                <h1 class="font-bold text-sm tracking-wide text-white">Gfony Casino</h1>
+                <p class="text-[10px] text-amber-400 font-medium">Telegram Mini App</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="openTopUpModal()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition">+ Пополнить</button>
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1b2030] border border-amber-500/30 text-amber-300 text-xs font-bold shadow-inner">
+                <span>⭐️</span>
+                <span id="balance-val">150</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="flex-1 p-4 space-y-4 overflow-y-auto" id="main-content">
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-600/20 via-purple-600/20 to-blue-600/20 border border-amber-500/30 shadow-lg">
+            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-semibold uppercase">Сезон 1</span>
+            <h2 class="text-base font-bold text-white mt-1">Рулетка NFT и Кейсы</h2>
+            <p class="text-xs text-gray-300 mt-1">Открывайте ежедневную рулетку раз в 24 часа или элитные кейсы с анимированным барабаном!</p>
+        </div>
+
+        <!-- Анимированная рулетка -->
+        <div id="roulette-container" class="hidden p-5 rounded-2xl bg-[#141824] border border-amber-500/50 text-center space-y-4 shadow-2xl relative overflow-hidden">
+            <h3 class="font-bold text-sm text-amber-400">🎁 Розыгрыш приза...</h3>
+            <div class="h-28 rounded-2xl bg-[#0d1017] border border-gray-800 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-y-0 w-1 bg-amber-400 z-10 shadow-[0_0_15px_#fbbf24]"></div>
+                <div id="roulette-track" class="flex items-center gap-3 transition-all duration-1000 ease-out px-32">
+                    <!-- Трек генерируется динамически -->
+                </div>
+            </div>
+            <div id="roulette-result-text" class="text-xs font-bold text-white h-5">Крутим барабан...</div>
+        </div>
+
+        <!-- Список доступных кейсов -->
+        <div class="space-y-3">
+            <h3 class="font-bold text-sm text-gray-200 px-1 flex items-center justify-between">
+                <span>🔥 Доступные кейсы</span>
+                <span class="text-xs text-amber-400 font-normal">4 кейса</span>
+            </h3>
+            
+            <!-- Ежедневный кейс (24 часа, шанс 0.0005%) -->
+            <div class="p-4 rounded-2xl bg-[#141824] border border-emerald-500/30 relative shadow-md">
+                <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Раз в 24 часа</span>
+                <div class="text-3xl mb-2">🎁</div>
+                <h4 class="font-bold text-sm text-white">Ежедневная Рулетка</h4>
+                <p id="daily-timer-text" class="text-xs text-gray-400 mb-4">Бесплатная рулетка. Шанс супер-джекпота 0.0005%!</p>
+                <button id="daily-btn" onclick="startCaseRoll('daily', 0)" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm shadow-md active:scale-95 transition">Крутить ежедневно</button>
+            </div>
+
+            <!-- Обычный кейс -->
+            <div class="p-4 rounded-2xl bg-[#141824] border border-blue-500/30 relative shadow-md">
+                <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold">15 ⭐️</span>
+                <div class="text-3xl mb-2">⚡</div>
+                <h4 class="font-bold text-sm text-white">Обычная Рулетка Gfony</h4>
+                <p class="text-xs text-gray-400 mb-4">Шанс выиграть скины и редкие мечи.</p>
+                <button onclick="startCaseRoll('standard', 15)" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-md active:scale-95 transition">Крутить (15 ⭐️)</button>
+            </div>
+
+            <!-- VIP кейс -->
+            <div class="p-4 rounded-2xl bg-[#141824] border border-purple-500/30 relative shadow-md">
+                <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold">50 ⭐️</span>
+                <div class="text-3xl mb-2">💎</div>
+                <h4 class="font-bold text-sm text-white">Элитный VIP Кейс</h4>
+                <p class="text-xs text-gray-400 mb-4">Различные эпические кристаллы и артефакты с рандомом.</p>
+                <button onclick="startCaseRoll('vip', 50)" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm shadow-md active:scale-95 transition">Открыть (50 ⭐️)</button>
+            </div>
+
+            <!-- Кейс Основателя -->
+            <div class="p-4 rounded-2xl bg-[#141824] border border-amber-500/40 relative shadow-md">
+                <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">🔒 5 Рефералов</span>
+                <div class="text-3xl mb-2">👑</div>
+                <h4 class="font-bold text-sm text-white">Кейс Основателя NFT</h4>
+                <p class="text-xs text-gray-400 mb-4">Гарантированный приз на 1000 звезд при разблокировке.</p>
+                <button onclick="startCaseRoll('founder', 0)" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-950 font-bold text-sm shadow-md active:scale-95 transition">Проверить статус</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно пополнения -->
+    <div id="topup-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <div class="bg-[#151926] border border-gray-800 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <h3 class="font-bold text-base text-white">💎 Пополнение баланса</h3>
+            <p class="text-xs text-gray-400">Выберите пакет звезд для пополнения счета в игре:</p>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="topUpStars(50)" class="p-3 rounded-xl bg-[#1b2030] hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs">+50 ⭐️</button>
+                <button onclick="topUpStars(200)" class="p-3 rounded-xl bg-[#1b2030] hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs">+200 ⭐️</button>
+                <button onclick="topUpStars(500)" class="p-3 rounded-xl bg-[#1b2030] hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs">+500 ⭐️</button>
+                <button onclick="topUpStars(1000)" class="p-3 rounded-xl bg-[#1b2030] hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs">+1000 ⭐️</button>
+            </div>
+            <button onclick="closeTopUpModal()" class="w-full py-2.5 rounded-xl bg-gray-800 text-white font-bold text-xs">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="fixed bottom-0 inset-x-0 bg-[#121622] border-t border-gray-800 px-4 py-2.5 flex items-center justify-around z-30 max-w-md mx-auto shadow-2xl">
+        <button onclick="switchTab('cases')" id="nav-cases" class="flex flex-col items-center gap-1 text-amber-400 font-semibold"><span class="text-lg">🔥</span><span class="text-[10px]">Кейсы</span></button>
+        <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition"><span class="text-lg">🎒</span><span class="text-[10px]">Инвентарь</span></button>
+        <button onclick="switchTab('refs')" id="nav-refs" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition"><span class="text-lg">👥</span><span class="text-[10px]">Друзья</span></button>
+        <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition"><span class="text-lg">👤</span><span class="text-[10px]">Профиль</span></button>
+    </nav>
+
+    <script>
+        let tgUserId = 12345678;
+        let tgUsername = "Player";
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+            tgUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
+            tgUsername = window.Telegram.WebApp.initDataUnsafe.user.username || "player_" + tgUserId;
+        }
+
+        let balance = 150;
+        let referralsCount = 0;
+        let inventory = [];
+
+        async function syncData() {
+            try {
+                const res = await fetch('/api/user?uid=' + tgUserId + '&username=' + tgUsername);
+                const data = await res.json();
+                balance = data.balance;
+                referralsCount = data.referrals;
+                inventory = data.inventory;
+                document.getElementById('balance-val').innerText = balance;
+            } catch (e) {
+                console.error('Sync error', e);
+            }
+        }
+
+        function openTopUpModal() { document.getElementById('topup-modal').classList.remove('hidden'); }
+        function closeTopUpModal() { document.getElementById('topup-modal').classList.add('hidden'); }
+
+        async function topUpStars(amount) {
+            try {
+                const res = await fetch('/api/topup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({uid: tgUserId, amount: amount})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    balance = data.balance;
+                    document.getElementById('balance-val').innerText = balance;
+                    closeTopUpModal();
+                    alert('💎 Успешно пополнено на +' + amount + ' ⭐️!');
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function startCaseRoll(type, cost) {
+            try {
+                const res = await fetch('/api/opencase', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({uid: tgUserId, type: type})
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    alert(data.message || 'Ошибка открытия кейса!');
+                    return;
+                }
+
+                const container = document.getElementById('roulette-container');
+                const track = document.getElementById('roulette-track');
+                const resultText = document.getElementById('roulette-result-text');
+                container.classList.remove('hidden');
+                container.scrollIntoView({behavior: 'smooth'});
+
+                let itemsList = [
+                    {name: '🪙 1 ⭐️', color: 'bg-gray-800 text-gray-300'},
+                    {name: '⚡ 5 ⭐️', color: 'bg-blue-900/50 text-blue-300'},
+                    {name: '💎 15 ⭐️', color: 'bg-purple-900/50 text-purple-300'},
+                    {name: '👑 NFT Корона', color: 'bg-amber-900/50 text-amber-300'},
+                    {name: '🔥 Кибер-Меч', color: 'bg-teal-900/50 text-teal-300'}
+                ];
+
+                let html = '';
+                for(let i=0; i<25; i++) {
+                    let randItem = itemsList[Math.floor(Math.random() * itemsList.length)];
+                    html += `<div class="w-24 h-20 shrink-0 rounded-xl ${randItem.color} border border-gray-700 flex flex-col items-center justify-center font-bold text-xs shadow-md"><span>${randItem.name}</span></div>`;
+                }
+                track.innerHTML = html;
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0px)';
+
+                setTimeout(() => {
+                    track.style.transition = 'all 2.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
+                    track.style.transform = 'translateX(-800px)';
+                }, 50);
+
+                setTimeout(() => {
+                    balance = data.balance;
+                    inventory = data.inventory;
+                    document.getElementById('balance-val').innerText = balance;
+                    resultText.innerText = '🎉 ' + data.message;
+                    setTimeout(() => {
+                        container.classList.add('hidden');
+                        if (activeTab === 'inventory') switchTab('inventory');
+                    }, 3000);
+                }, 2600);
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function exchangeItem(id) {
+            try {
+                const res = await fetch('/api/exchange', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({uid: tgUserId, item_id: id})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    balance = data.balance;
+                    inventory = data.inventory;
+                    document.getElementById('balance-val').innerText = balance;
+                    switchTab('inventory');
+                } else {
+                    alert(data.message);
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function copyRefLink() {
+            const linkInput = document.getElementById('ref-link-input');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value);
+            alert('📋 Реферальная ссылка скопирована!');
+        }
+
+        let activeTab = 'cases';
+        function switchTab(tab) {
+            activeTab = tab;
+            ['cases', 'inventory', 'refs', 'profile'].forEach(t => {
+                const btn = document.getElementById('nav-' + t);
+                if (btn) btn.className = t === tab ? 'flex flex-col items-center gap-1 text-amber-400 font-semibold' : 'flex flex-col items-center gap-1 text-gray-400 hover:text-white transition';
+            });
+            const main = document.getElementById('main-content');
+            if (tab === 'inventory') {
+                main.innerHTML = inventory.length === 0 ? '<div class="p-8 text-center"><h3 class="font-bold text-white">Инвентарь пуст</h3></div>' : 
+                    '<div class="space-y-3"><h3 class="font-bold text-sm text-white px-1">Ваши предметы</h3>' + inventory.map(i => `
+                        <div class="p-3.5 rounded-2xl bg-[#141824] border border-gray-800 flex items-center justify-between">
+                            <div><div class="font-bold text-xs text-white">${i.name}</div><div class="text-[11px] text-gray-400">Ценность: ${i.stars} ⭐️</div></div>
+                            ${i.status === 'available' ? `<button onclick="exchangeItem(${i.id})" class="px-3 py-1.5 rounded-xl bg-amber-500 text-gray-950 font-bold text-xs">Обменять</button>` : `<span class="text-xs text-amber-400">Нужно 5 реф.</span>`}
+                        </div>`).join('') + '</div>';
+            } else if (tab === 'refs') {
+                const uniqueLink = 'https://t.me/gfonycasino_bot?start=ref_' + tgUserId;
+                main.innerHTML = `<div class="p-5 rounded-2xl bg-[#141824] border border-gray-800 space-y-4"><h3 class="font-bold text-base text-white text-center">👥 Рефералы</h3><input type="text" id="ref-link-input" value="${uniqueLink}" readonly class="w-full bg-[#1b2030] p-2.5 rounded-xl text-xs text-amber-300 font-mono" /><button onclick="copyRefLink()" class="w-full py-2.5 bg-amber-500 text-gray-950 font-bold text-xs rounded-xl">Копировать ссылку</button><div class="text-xs text-gray-300 text-center">Приглашено друзей: ${referralsCount} / 5</div></div>`;
+            } else if (tab === 'profile') {
+                main.innerHTML = `<div class="p-5 rounded-2xl bg-[#141824] border border-gray-800 text-center space-y-3"><div class="text-3xl">👤</div><h3 class="font-bold text-base text-white">Игрок Gfony</h3><p class="text-xs text-gray-400">Баланс: ${balance} ⭐️ | Рефералы: ${referralsCount}/5</p></div>`;
+            } else {
+                location.reload();
+            }
+        }
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
+        syncData();
+    </script>
+</body>
+</html>
